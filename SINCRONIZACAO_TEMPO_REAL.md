@@ -1,0 +1,65 @@
+# Sincronização do cronograma em tempo real
+
+O organizador de tarefas é um projeto independente hospedado no GitHub Pages. O estado compartilhado fica em um projeto Supabase dedicado e a interface nunca recebe uma chave administrativa.
+
+## Como funciona
+
+1. Lucas ou Letícia abre o link público do guia.
+2. A pessoa informa um e-mail autorizado e recebe um link mágico de acesso.
+3. Cada clique grava apenas a tarefa alterada em `tcc_task_progress`.
+4. O Supabase Realtime envia a alteração ao outro navegador.
+5. O indicador da página mostra `ao vivo`, `conectando` ou `reconectando`.
+
+O navegador mantém uma cópia local somente para carregamento rápido. Depois do login, o banco é a fonte oficial do progresso.
+
+## Segurança
+
+- O frontend usa apenas uma chave `sb_publishable_...`, que é pública por definição.
+- Chaves `secret` e `service_role` nunca podem ser adicionadas a `realtime-config.js`.
+- Todas as tabelas públicas têm Row Level Security (RLS).
+- Somente e-mails cadastrados em `tcc_board_members` podem ler ou alterar o quadro.
+- Visitantes não autenticados não recebem permissão de leitura ou escrita.
+- O banco substitui `updated_by` e `updated_at` em cada alteração, evitando auditoria forjada pelo navegador.
+
+## Arquivos
+
+- `realtime-config.js`: URL, chave pública e identificador do quadro.
+- `realtime-sync.js`: acesso ao banco e assinatura do canal em tempo real.
+- `supabase/schema.sql`: tabelas, políticas RLS, gatilhos e publicação Realtime.
+- `tests/realtime-sync.test.cjs`: testes da configuração, estado remoto e migração de links antigos.
+
+## Ativação
+
+1. Criar um projeto Supabase dedicado ao TCC na região `sa-east-1`.
+2. Aplicar `supabase/schema.sql` como migração.
+3. Adicionar os dois e-mails em `tcc_board_members`, sempre em minúsculas.
+4. Em Auth > URL Configuration, configurar:
+   - Site URL: `https://USUARIO.github.io/tcc-organizador-tarefas/`
+   - Redirect URL: `https://USUARIO.github.io/tcc-organizador-tarefas/`
+5. Copiar a Project URL e uma chave pública `sb_publishable_...` para `realtime-config.js` e alterar `enabled` para `true`.
+6. Publicar a alteração no GitHub Pages.
+
+Exemplo administrativo para cadastrar os membros depois da criação do quadro:
+
+```sql
+insert into public.tcc_board_members (board_id, email, display_name, role)
+select id, lower('EMAIL_DA_LETICIA'), 'Letícia', 'owner'
+from public.tcc_boards
+where slug = 'tcc-organizador-tarefas';
+
+insert into public.tcc_board_members (board_id, email, display_name, role)
+select id, lower('EMAIL_DO_LUCAS'), 'Lucas', 'member'
+from public.tcc_boards
+where slug = 'tcc-organizador-tarefas';
+```
+
+## Compatibilidade com o link antigo
+
+Links que contêm `#p=...` ainda são reconhecidos. Depois que uma pessoa autorizada entra, as tarefas concluídas desse link são inseridas apenas quando ainda não existem no banco. Assim, o histórico compartilhado existente não é sobrescrito.
+
+## Comportamento em falhas
+
+- Sem login, cliques são bloqueados no modo compartilhado.
+- Se uma gravação falhar, a página recarrega o estado oficial do banco.
+- Se somente o WebSocket cair, as gravações continuam no banco e o indicador mostra que o canal está reconectando.
+- Ao voltar para a aba ou recuperar a internet, a página busca novamente o estado oficial.

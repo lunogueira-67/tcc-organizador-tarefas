@@ -1,0 +1,9 @@
+{
+  "name": "tcc-organizador-tarefas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Organizador compartilhado do cronograma do TCC Fraude Pix",
+  "scripts": {
+    "test": "node --test tests/realtime-sync.test.cjs"
+  }
+}

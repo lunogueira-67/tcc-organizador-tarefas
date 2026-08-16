@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Organizador do TCC — Fraude Pix</title>
+  <style>
+    /* ── Reset e variáveis ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --p1: #6C63FF;        /* Pessoa 1 — roxo */
+      --p1-light: #EEF0FF;
+      --p2: #00B4A6;        /* Pessoa 2 — verde-teal */
+      --p2-light: #E0F7F5;
+      --both: #F59E0B;      /* Ambos — âmbar */
+      --both-light: #FEF3C7;
+      --bg: #F8F9FC;
+      --card: #FFFFFF;
+      --text: #1E293B;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow-hover: 0 6px 24px rgba(0,0,0,0.12);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ────────────────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%);
+      color: white;
+      padding: 32px 40px 28px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      opacity: 0.75;
+      margin-top: 4px;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Progress global ────────────────────────────────────────────────── */
+    .progress-global {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      min-width: 200px;
+    }
+
+    .progress-global span {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .progress-bar-outer {
+      width: 200px;
+      height: 10px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #A5F3FC, #38BDF8);
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    /* ── Layout principal ───────────────────────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 24px 80px;
+    }
+
+    /* ── Legenda de dupla ───────────────────────────────────────────────── */
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* ── Nome da dupla ──────────────────────────────────────────────────── */
+    .dupla-nomes {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+
+    .dupla-card {
+      flex: 1;
+      min-width: 200px;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .dupla-card.p1 { background: var(--p1-light); border: 2px solid var(--p1); }
+    .dupla-card.p2 { background: var(--p2-light); border: 2px solid var(--p2); }
+
+    .dupla-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .dupla-avatar.p1 { background: var(--p1); }
+    .dupla-avatar.p2 { background: var(--p2); }
+
+    .dupla-info input {
+      border: none;
+      background: transparent;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      width: 100%;
+      outline: none;
+      cursor: text;
+    }
+
+    .dupla-info small {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── Seção de mês ───────────────────────────────────────────────────── */
+    .mes-secao {
+      margin-bottom: 40px;
+    }
+
+    .mes-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .mes-badge {
+      background: linear-gradient(135deg, #1E1B4B, #4338CA);
+      color: white;
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    .mes-badge.atual {
+      background: linear-gradient(135deg, #D97706, #F59E0B);
+    }
+
+    .mes-titulo {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .mes-subtitulo {
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .mes-progresso-texto {
+      margin-left: auto;
+      font-size: 0.85rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── Grid de tarefas ────────────────────────────────────────────────── */
+    .tarefas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .tarefas-grid { grid-template-columns: 1fr; }
+      .mes-header { align-items: flex-start; flex-wrap: wrap; }
+      .mes-progresso-texto { width: 100%; margin-left: 0; }
+    }
+
+    .coluna-pessoa {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.2s;
+    }
+
+    .coluna-pessoa:hover { box-shadow: var(--shadow-hover); }
+
+    .coluna-header {
+      padding: 14px 18px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .coluna-header.p1 { background: var(--p1-light); color: var(--p1); border-bottom: 2px solid var(--p1); }
+    .coluna-header.p2 { background: var(--p2-light); color: var(--p2); border-bottom: 2px solid var(--p2); }
+    .coluna-header.both { background: var(--both-light); color: #92400E; border-bottom: 2px solid var(--both); }
+
+    .coluna-header .avatar-mini {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: white;
+    }
+
+    .avatar-mini.p1 { background: var(--p1); }
+    .avatar-mini.p2 { background: var(--p2); }
+    .avatar-mini.both { background: var(--both); }
+
+    /* ── Itens de tarefa ────────────────────────────────────────────────── */
+    .tarefa-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
+      user-select: none;
+    }
+
+    .tarefa-item:last-child { border-bottom: none; }
+    .tarefa-item:hover { background: #F8F9FC; }
+    .tarefa-item.concluida { opacity: 0.55; }
+
+    .tarefa-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .tarefa-item.concluida .tarefa-check.p1 {
+      background: var(--p1);
+      border-color: var(--p1);
+    }
+
+    .tarefa-item.concluida .tarefa-check.p2 {
+      background: var(--p2);
+      border-color: var(--p2);
+    }
+
+    .tarefa-item.concluida .tarefa-check.both {
+      background: var(--both);
+      border-color: var(--both);
+    }
+
+    .tarefa-check svg {
+      display: none;
+    }
+
+    .tarefa-item.concluida .tarefa-check svg {
+      display: block;
+    }
+
+    .tarefa-texto {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .tarefa-item.concluida .tarefa-texto {
+      text-decoration: line-through;
+    }
+
+    .tarefa-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 4px;
+      padding: 2px 7px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tarefa-tag.entregavel { background: #FEE2E2; color: #991B1B; }
+    .tarefa-tag.codigo    { background: #DBEAFE; color: #1E40AF; }
+    .tarefa-tag.escrita   { background: #D1FAE5; color: #065F46; }
+    .tarefa-tag.pesquisa  { background: #F3E8FF; color: #6B21A8; }
+
+    /* ── Coluna AMBOS span full ─────────────────────────────────────────── */
+    .coluna-full {
+      grid-column: 1 / -1;
+    }
+
+    /* ── Dicas flutuantes ───────────────────────────────────────────────── */
+    .dicas-section {
+      margin-top: 48px;
+    }
+
+    .dicas-titulo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .dicas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .dica-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .dica-icon {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+    }
+
+    .dica-card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .dica-card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── Separador de mês ───────────────────────────────────────────────── */
+    .divisor {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0 28px;
+    }
+
+    /* ── Countdown ──────────────────────────────────────────────────────── */
+    .countdown {
+      background: linear-gradient(135deg, #1E1B4B, #312E81);
+      color: white;
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 36px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+    }
+
+    .countdown-texto h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .countdown-numero {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .countdown-unidade {
+      font-size: 0.8rem;
+      opacity: 0.65;
+    }
+
+    .countdown-blocks {
+      display: flex;
+      gap: 16px;
+      margin-left: auto;
+    }
+
+    .countdown-block {
+      text-align: center;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px 18px;
+    }
+
+    .countdown-block .num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .countdown-block .label {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    /* ── Botão compartilhar ─────────────────────────────────────────────── */
+    .btn-compartilhar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-compartilhar:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    .btn-compartilhar.copiado {
+      background: #10B981;
+      border-color: #10B981;
+    }
+
+    /* ── Sincronização compartilhada ───────────────────────────────────── */
+    .sync-panel {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+    }
+
+    .sync-summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 240px;
+      flex: 1;
+    }
+
+    .sync-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #94A3B8;
+      box-shadow: 0 0 0 5px #F1F5F9;
+      flex-shrink: 0;
+    }
+
+    .sync-panel[data-status="live"] .sync-dot {
+      background: #10B981;
+      box-shadow: 0 0 0 5px #D1FAE5;
+    }
+
+    .sync-panel[data-status="connecting"] .sync-dot {
+      background: #3B82F6;
+      box-shadow: 0 0 0 5px #DBEAFE;
+      animation: sync-pulse 1.4s ease-in-out infinite;
+    }
+
+    .sync-panel[data-status="degraded"] .sync-dot,
+    .sync-panel[data-status="error"] .sync-dot {
+      background: #F59E0B;
+      box-shadow: 0 0 0 5px #FEF3C7;
+    }
+
+    @keyframes sync-pulse {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 1; }
+    }
+
+    .sync-copy strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 3px;
+    }
+
+    .sync-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .sync-form,
+    .sync-session {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sync-form input {
+      width: min(280px, 72vw);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 11px;
+      font: inherit;
+      font-size: 0.84rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    .sync-form input:focus {
+      border-color: #6366F1;
+      box-shadow: 0 0 0 3px #EEF2FF;
+    }
+
+    .sync-button {
+      border: none;
+      border-radius: 8px;
+      padding: 9px 13px;
+      background: #4338CA;
+      color: white;
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .sync-button.secondary {
+      background: #E2E8F0;
+      color: #334155;
+    }
+
+    .sync-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .sync-session-email {
+      color: var(--muted);
+      font-size: 0.78rem;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    [hidden] { display: none !important; }
+
+    .tarefa-item.sincronizando {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    /* ── Toast de notificação ────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1E293B;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 99px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      z-index: 999;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.visivel {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Banner de progresso importado ──────────────────────────────────── */
+    .banner-importado {
+      background: #D1FAE5;
+      border: 1.5px solid #10B981;
+      color: #065F46;
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── Rodapé ─────────────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>Organizador do TCC — Detecção de Fraudes em Transações Pix</h1>
+      <p>Protótipo Híbrido ML + SHAP + RAG &nbsp;·&nbsp; Contexto Pix Brasileiro &nbsp;·&nbsp; Ciência da Computação &nbsp;·&nbsp; Dupla</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:flex-end">
+      <button class="btn-compartilhar" id="btn-share" onclick="compartilharProgresso()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Compartilhar progresso
+      </button>
+      <div class="progress-global">
+        <span>Progresso geral: <strong id="pct-geral">0%</strong></span>
+        <div class="progress-bar-outer">
+          <div class="progress-bar-fill" id="barra-geral" style="width:0%"></div>
+        </div>
+        <span id="txt-concluidas" style="font-size:0.75rem;opacity:0.7">0 de 0 tarefas concluídas</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="toast" id="toast"></div>
+
+<div class="container">
+
+  <!-- Status e acesso ao progresso compartilhado -->
+  <section class="sync-panel" id="sync-panel" data-status="local" aria-live="polite">
+    <div class="sync-summary">
+      <div class="sync-dot" aria-hidden="true"></div>
+      <div class="sync-copy">
+        <strong id="sync-title">Progresso salvo neste dispositivo</strong>
+        <span id="sync-detail">A sincronização compartilhada ainda não foi configurada.</span>
+      </div>
+    </div>
+    <form class="sync-form" id="sync-form" hidden>
+      <input id="sync-email" type="email" autocomplete="email" required placeholder="seu@email.com" aria-label="E-mail autorizado" />
+      <button class="sync-button" id="sync-login-button" type="submit">Receber link de acesso</button>
+    </form>
+    <div class="sync-session" id="sync-session" hidden>
+      <span class="sync-session-email" id="sync-session-email"></span>
+      <button class="sync-button secondary" id="sync-logout-button" type="button">Sair</button>
+    </div>
+  </section>
+
+  <!-- Countdown -->
+  <div class="countdown">
+    <div class="countdown-texto">
+      <h2>Prazo final de entrega</h2>
+      <div class="countdown-numero" id="dias-restantes">—</div>
+      <div class="countdown-unidade">dias restantes até outubro/2026</div>
+    </div>
+    <div class="countdown-blocks">
+      <div class="countdown-block">
+        <div class="num" id="cd-meses">—</div>
+        <div class="label">Meses</div>
+      </div>
+      <div class="countdown-block">
+        <div class="num" id="cd-semanas">—</div>
+        <div class="label">Semanas</div>
+      </div>
+      <div class="countdown-block">
+        <div class="num" id="cd-dias">—</div>
+        <div class="label">Dias</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nomes da dupla -->
+  <div class="dupla-nomes">
+    <div class="dupla-card p1">
+      <div class="dupla-avatar p1" id="av1">P1</div>
+      <div class="dupla-info">
+        <input type="text" id="nome-p1" placeholder="Nome da Pessoa 1" value="Letícia" onchange="salvarNomes()" oninput="atualizarAvatar()" />
+        <small>Foco: ML Pipeline + Data</small>
+      </div>
+    </div>
+    <div class="dupla-card p2">
+      <div class="dupla-avatar p2" id="av2">P2</div>
+      <div class="dupla-info">
+        <input type="text" id="nome-p2" placeholder="Nome da Pessoa 2" value="Lucas" onchange="salvarNomes()" oninput="atualizarAvatar()" />
+        <small>Foco: RAG + Escrita</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legenda -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--p1)"></div>
+      <span id="leg-p1">Pessoa 1 (ML + Data)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--p2)"></div>
+      <span id="leg-p2">Pessoa 2 (RAG + Escrita)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--both)"></div>
+      <span>Ambos</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#EF4444"></div>
+      <span>Entregável</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#3B82F6"></div>
+      <span>Código</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#10B981"></div>
+      <span>Escrita</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- MÊS A MÊS                                                   -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div id="meses-container"></div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- DICAS                                                        -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="dicas-section">
+    <div class="dicas-titulo">Dicas para a dupla</div>
+    <div class="dicas-grid">
+      <div class="dica-card">
+        <div class="dica-icon">🔀</div>
+        <h3>Git com branches por feature</h3>
+        <p>Cada tarefa vira uma branch. Usem pull requests mesmo entre vocês — isso cria histórico e evita conflitos de código.</p>
+      </div>
+      <div class="dica-card">
+        <div class="dica-icon">📅</div>
+        <h3>Reunião semanal de 30 min</h3>
+        <p>Todo domingo: o que cada um fez, o que vem pela frente, o que está bloqueando. Registrem no Notion ou Google Docs.</p>
+      </div>
+      <div class="dica-card">
+        <div class="dica-icon">📊</div>
+        <h3>Experimentos rastreados</h3>
+        <p>Usem MLflow ou um CSV simples para registrar cada modelo treinado (hiperparâmetros + métricas). Facilita comparações no Capítulo 4.</p>
+      </div>
+      <div class="dica-card">
+        <div class="dica-icon">✍️</div>
+        <h3>Escrita paralela ao código</h3>
+        <p>Não deixem a escrita para o final. Cada módulo implementado → parágrafo no TCC. A metodologia cresce junto com o código.</p>
+      </div>
+      <div class="dica-card">
+        <div class="dica-icon">📁</div>
+        <h3>Dataset não vai no Git</h3>
+        <p>Usem o .gitignore criado. Compartilhem os dados via Google Drive ou DVC. O Git é para código, não para CSV de 800 MB.</p>
+      </div>
+      <div class="dica-card">
+        <div class="dica-icon">🎯</div>
+        <h3>Métrica principal: F1 + AUC-PR</h3>
+        <p>Com 3.5% de fraudes, acurácia é enganosa. AUC-PR (Precision-Recall) é a métrica que os revisores do artigo vão exigir.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer id="site-footer">
+  TCC — Ciência da Computação &nbsp;·&nbsp; Clique nas tarefas para marcar como concluída &nbsp;·&nbsp; Progresso salvo automaticamente neste dispositivo
+</footer>
+
+<script src="./realtime-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0"></script>
+<script src="./realtime-sync.js"></script>
+<script>
+// ── Dados das tarefas por mês ────────────────────────────────────────────────
+const MESES = [
+  {
+    id: 'maio',
+    label: 'Maio',
+    ano: 2026,
+    atual: true,
+    titulo: 'Fundação do projeto',
+    subtitulo: 'Entender o dataset IEEE-CIS, o contexto Pix e configurar o ambiente',
+    tarefas: {
+      p1: [
+        { id: 'm1_p1_0a', texto: 'Ler a proposta aprovada do TCC completa e entender cada seção da metodologia', tags: ['pesquisa'] },
+        { id: 'm1_p1_0b', texto: 'Ler a descrição do dataset IEEE-CIS no Kaggle: entender as duas tabelas (transaction + identity)', tags: ['pesquisa'] },
+        { id: 'm1_p1_0c', texto: 'Estudar os grupos de colunas: C1–C14 (contagens), D1–D15 (tempo), M1–M9 (match), V1–V339 (Vesta anônimo)', tags: ['pesquisa'] },
+        { id: 'm1_p1_0d', texto: 'Entender as features de identidade: id_01–id_38, DeviceType, DeviceInfo', tags: ['pesquisa'] },
+        { id: 'm1_p1_0e', texto: 'Estudar o contexto Pix: o que são golpes típicos (falso funcionário, engenharia social, clonagem)?', tags: ['pesquisa'] },
+        { id: 'm1_p1_1', texto: 'Configurar ambiente Python 3.11, criar venv e instalar requirements.txt', tags: ['codigo'] },
+        { id: 'm1_p1_2', texto: 'Configurar credenciais Kaggle no .env e baixar o dataset via data_loader.py', tags: ['codigo'] },
+        { id: 'm1_p1_3', texto: 'Rodar notebook 01_eda.ipynb: shape, dtypes, nulos e distribuição de isFraud', tags: ['codigo'] },
+        { id: 'm1_p1_4', texto: 'Documentar achados do EDA em reports/eda_summary.txt', tags: ['escrita'] },
+      ],
+      p2: [
+        { id: 'm1_p2_0a', texto: 'Ler a proposta aprovada e entender a arquitetura das 3 camadas (ML → SHAP → RAG)', tags: ['pesquisa'] },
+        { id: 'm1_p2_0b', texto: 'Pesquisar o Pix: ler o Regulamento do Pix (Res. BCB nº 1/2020 consolidada), a Res. BCB nº 103/2021, o Guia do MED vigente e o relatório FEBRABAN 2024', tags: ['pesquisa'] },
+        { id: 'm1_p2_0c', texto: 'Ler 3 artigos sobre detecção de fraude financeira com ML (Google Scholar: "Pix fraud detection" e "financial fraud machine learning")', tags: ['pesquisa'] },
+        { id: 'm1_p2_0d', texto: 'Entender RAG: o que é, como funciona (retriever → embeddings → LLM) e por que é útil para explicar fraudes', tags: ['pesquisa'] },
+        { id: 'm1_p2_1', texto: 'Levantar 15+ referências bibliográficas e organizar no Zotero ou Google Docs', tags: ['pesquisa'] },
+        { id: 'm1_p2_2', texto: 'Criar documento compartilhado no Overleaf ou Google Docs para o TCC', tags: ['escrita'] },
+        { id: 'm1_p2_3', texto: 'Redigir rascunho do Capítulo 1 — Introdução: contexto Pix, problema, objetivos', tags: ['escrita'] },
+        { id: 'm1_p2_4', texto: 'Criar repositório Git compartilhado e definir convenção de branches', tags: ['codigo'] },
+      ],
+      ambos: [
+        { id: 'm1_ab_0', texto: 'Ler juntos o dicionário de dados (reports/dicionario_dados.docx) e discutir quais colunas mapear para contexto Pix', tags: ['pesquisa'] },
+        { id: 'm1_ab_1', texto: 'Reunião de kickoff: definir responsabilidades, cronograma interno e ferramentas (LLM, banco vetorial)', tags: ['entregavel'] },
+        { id: 'm1_ab_2', texto: 'Entrega: Proposta de TCC protocolada na coordenação ✓ (já feita)', tags: ['entregavel'] },
+      ]
+    }
+  },
+  {
+    id: 'junho',
+    label: 'Junho',
+    ano: 2026,
+    titulo: 'Dataset Pix Simulado & Baseline',
+    subtitulo: 'Engenharia de features Pix, SMOTE e primeiros modelos',
+    tarefas: {
+      p1: [
+        { id: 'm2_p1_1', texto: 'Criar src/features/pix_features.py: engenharia de features inspiradas em Pix (hora_suspeita, freq_recente, dispositivo_novo, valor_atipico)', tags: ['codigo'] },
+        { id: 'm2_p1_2', texto: 'Implementar src/features/preprocessor.py: imputação de nulos, encoding de categóricas, escalonamento', tags: ['codigo'] },
+        { id: 'm2_p1_3', texto: 'Aplicar SMOTE e ajuste de pesos de classe (imbalanced-learn)', tags: ['codigo'] },
+        { id: 'm2_p1_4', texto: 'Criar pipeline scikit-learn com train/val/test split estratificado (70/15/15)', tags: ['codigo'] },
+        { id: 'm2_p1_5', texto: 'Treinar baseline: Regressão Logística → medir AUC-ROC, AUC-PR, F1, Recall', tags: ['codigo'] },
+        { id: 'm2_p1_6', texto: 'Notebook 02_preprocessing.ipynb documentado como entregável', tags: ['entregavel'] },
+      ],
+      p2: [
+        { id: 'm2_p2_1', texto: 'Redigir Capítulo 2 — Revisão Bibliográfica (seção: fraudes no Pix e pagamentos instantâneos)', tags: ['escrita'] },
+        { id: 'm2_p2_2', texto: 'Redigir Capítulo 2 — Revisão Bibliográfica (seção: ML para detecção de fraude)', tags: ['escrita'] },
+        { id: 'm2_p2_3', texto: 'Redigir Capítulo 2 — Revisão Bibliográfica (seção: RAG e LLMs)', tags: ['escrita'] },
+        { id: 'm2_p2_4', texto: 'Estudar LangChain: chains, retrievers e prompt templates', tags: ['pesquisa'] },
+        { id: 'm2_p2_5', texto: 'Escrever seção da Metodologia: visão geral das 3 camadas do protótipo', tags: ['escrita'] },
+      ],
+      ambos: [
+        { id: 'm2_ab_1', texto: 'Definir quais features Pix simuladas fazer: mapear colunas IEEE-CIS → conceitos Pix', tags: ['pesquisa'] },
+        { id: 'm2_ab_2', texto: 'Entrega parcial 1: EDA + features Pix documentados para o orientador', tags: ['entregavel'] },
+      ]
+    }
+  },
+  {
+    id: 'julho',
+    label: 'Julho',
+    ano: 2026,
+    titulo: 'XGBoost, Random Forest & SHAP',
+    subtitulo: 'Modelos principais, comparativo e explicabilidade técnica',
+    tarefas: {
+      p1: [
+        { id: 'm3_p1_1', texto: 'Treinar XGBoost (modelo principal) com Optuna para hyperparameter tuning', tags: ['codigo'] },
+        { id: 'm3_p1_2', texto: 'Treinar Random Forest (modelo comparativo) e comparar AUC-PR, F1 e tempo de treino', tags: ['codigo'] },
+        { id: 'm3_p1_3', texto: 'Implementar src/models/evaluator.py: todas as métricas + matriz de confusão + curva PR', tags: ['codigo'] },
+        { id: 'm3_p1_4', texto: 'Aplicar SHAP no XGBoost: importância global (summary plot) e explicação por transação (force plot)', tags: ['codigo'] },
+        { id: 'm3_p1_5', texto: 'Notebook 03_models.ipynb: tabela comparativa XGBoost vs Random Forest vs Baseline', tags: ['entregavel'] },
+      ],
+      p2: [
+        { id: 'm3_p2_1', texto: 'Coletar e organizar documentos versionados para a base RAG: Regulamento do Pix, Res. BCB nº 103/2021, Guia do MED vigente e relatório FEBRABAN 2024', tags: ['pesquisa'] },
+        { id: 'm3_p2_2', texto: 'Criar src/rag/knowledge_base.py: chunking dos documentos (500 tokens, overlap 50)', tags: ['codigo'] },
+        { id: 'm3_p2_3', texto: 'Implementar embeddings com sentence-transformers (modelo: paraphrase-multilingual-MiniLM)', tags: ['codigo'] },
+        { id: 'm3_p2_4', texto: 'Criar banco vetorial FAISS com os chunks dos documentos regulatórios', tags: ['codigo'] },
+        { id: 'm3_p2_5', texto: 'Redigir Metodologia — Camada 2: SHAP (como funciona, por que foi escolhido)', tags: ['escrita'] },
+      ],
+      ambos: [
+        { id: 'm3_ab_1', texto: 'Definir LLM para o RAG: Claude API (claude-haiku-4-5) ou Llama 3 local via Ollama', tags: ['pesquisa'] },
+        { id: 'm3_ab_2', texto: 'Entrega parcial 2: resultados dos modelos ML para o orientador', tags: ['entregavel'] },
+      ]
+    }
+  },
+  {
+    id: 'agosto',
+    label: 'Agosto',
+    ano: 2026,
+    titulo: 'Pipeline RAG + Streamlit',
+    subtitulo: 'Integração SHAP→RAG→LLM e interface de demonstração',
+    tarefas: {
+      p1: [
+        { id: 'm4_p1_1', texto: 'Implementar src/rag/retriever.py: busca vetorial no FAISS por similaridade de cosseno', tags: ['codigo'] },
+        { id: 'm4_p1_2', texto: 'Implementar src/rag/explainer.py: SHAP top-3 → prompt → LLM → explicação em português', tags: ['codigo'] },
+        { id: 'm4_p1_3', texto: 'Criar pipeline completo: transação → XGBoost → SHAP → RAG → explicação textual', tags: ['codigo'] },
+        { id: 'm4_p1_4', texto: 'Notebook 04_rag_pipeline.ipynb: 10 exemplos de fraude explicada com saída do LLM', tags: ['entregavel'] },
+        { id: 'm4_p1_5', texto: 'Escrever testes unitários em tests/ para as 3 camadas (cobertura mínima 60%)', tags: ['codigo'] },
+      ],
+      p2: [
+        { id: 'm4_p2_1', texto: 'Desenvolver interface Streamlit (app.py): entrada de transação → resultado ML → explicação RAG', tags: ['codigo'] },
+        { id: 'm4_p2_2', texto: 'Avaliar qualidade das explicações: relevância dos docs recuperados, coerência com SHAP, ausência de alucinações', tags: ['pesquisa'] },
+        { id: 'm4_p2_3', texto: 'Redigir Metodologia — Camada 3: RAG (arquitetura, documentos, LLM escolhido)', tags: ['escrita'] },
+        { id: 'm4_p2_4', texto: 'Documentar exemplos de saída do sistema para o Capítulo 4 — Resultados', tags: ['escrita'] },
+        { id: 'm4_p2_5', texto: 'Criar figuras da arquitetura do protótipo (fluxograma das 3 camadas)', tags: ['escrita'] },
+      ],
+      ambos: [
+        { id: 'm4_ab_1', texto: 'Teste de integração: rodar o sistema completo de ponta a ponta com 50 transações suspeitas', tags: ['codigo'] },
+        { id: 'm4_ab_2', texto: 'Entrega parcial 3: protótipo funcionando demonstrado para o orientador via Streamlit', tags: ['entregavel'] },
+      ]
+    }
+  },
+  {
+    id: 'setembro',
+    label: 'Setembro',
+    ano: 2026,
+    titulo: 'Escrita, Avaliação & Formatação',
+    subtitulo: 'Texto completo, experimentos finais e ABNT',
+    tarefas: {
+      p1: [
+        { id: 'm5_p1_1', texto: 'Redigir Capítulo 4 — Resultados: tabela comparativa de modelos, SHAP plots, exemplos de explicação RAG', tags: ['escrita'] },
+        { id: 'm5_p1_2', texto: 'Rodar experimentos finais com dataset completo e registrar todos os resultados', tags: ['codigo'] },
+        { id: 'm5_p1_3', texto: 'Gerar todas as figuras do TCC em alta resolução (300 dpi): curvas PR, SHAP summary, arquitetura', tags: ['codigo'] },
+        { id: 'm5_p1_4', texto: 'Revisar código: docstrings, README.md, garantir que pipeline roda do zero em máquina limpa', tags: ['codigo'] },
+        { id: 'm5_p1_5', texto: 'Tornar repositório GitHub público com LICENSE MIT e README completo', tags: ['entregavel'] },
+      ],
+      p2: [
+        { id: 'm5_p2_1', texto: 'Redigir Capítulo 1 — Introdução final: contextualizar Pix, problema, objetivos e contribuições', tags: ['escrita'] },
+        { id: 'm5_p2_2', texto: 'Redigir Capítulo 5 — Conclusão: resultados alcançados, limitações do protótipo e trabalhos futuros', tags: ['escrita'] },
+        { id: 'm5_p2_3', texto: 'Formatar monografia nas normas ABNT (margens, fonte Times 12, espaçamento, sumário automático)', tags: ['escrita'] },
+        { id: 'm5_p2_4', texto: 'Revisar e formatar referências bibliográficas conforme ABNT NBR 6023', tags: ['escrita'] },
+        { id: 'm5_p2_5', texto: 'Formatar artigo no template da conferência alvo (ENIAC/BRACIS — SBC LaTeX ou Word)', tags: ['entregavel'] },
+      ],
+      ambos: [
+        { id: 'm5_ab_1', texto: 'Revisão cruzada: Letícia revisa a escrita do Lucas, Lucas revisa o código da Letícia', tags: [] },
+        { id: 'm5_ab_2', texto: 'Submeter versão pré-final ao orientador + escolher venue (ENIAC ou BRACIS 2026)', tags: ['entregavel'] },
+      ]
+    }
+  },
+  {
+    id: 'outubro',
+    label: 'Outubro',
+    ano: 2026,
+    titulo: 'Entrega Final & Artigo',
+    subtitulo: 'Submissão do TCC e do artigo científico',
+    tarefas: {
+      p1: [
+        { id: 'm6_p1_1', texto: 'Incorporar correções finais do orientador no texto e no código', tags: ['escrita'] },
+        { id: 'm6_p1_2', texto: 'Garantir reprodutibilidade total: pipeline roda do zero em máquina limpa com um comando', tags: ['codigo'] },
+        { id: 'm6_p1_3', texto: 'Fazer tag de release no GitHub (v1.0.0) para registrar versão entregue', tags: ['codigo'] },
+      ],
+      p2: [
+        { id: 'm6_p2_1', texto: 'Revisão ortográfica e gramatical final do TCC completo', tags: ['escrita'] },
+        { id: 'm6_p2_2', texto: 'Gerar PDF final e submeter no sistema da universidade', tags: ['entregavel'] },
+        { id: 'm6_p2_3', texto: 'Finalizar artigo: ajustar resultados, revisão final, carta de submissão', tags: ['escrita'] },
+      ],
+      ambos: [
+        { id: 'm6_ab_1', texto: '🏆 ENTREGA FINAL do TCC na coordenação', tags: ['entregavel'] },
+        { id: 'm6_ab_2', texto: '📄 SUBMISSÃO do artigo para ENIAC ou BRACIS 2026', tags: ['entregavel'] },
+      ]
+    }
+  }
+];
+
+// ── Runtime da sincronização compartilhada ──────────────────────────────────
+const REALTIME_CONFIG = window.TCC_REALTIME_CONFIG || {};
+const tarefasPendentes = new Set();
+let realtimeBoard = null;
+let supabaseClient = null;
+let sessaoAtual = null;
+let sincronizacaoPronta = false;
+let estadoLegadoPendente = null;
+let nomesSyncTimer = null;
+let conexaoAtual = 0;
+
+function realtimeConfigurado() {
+  return Boolean(
+    window.TccRealtimeSync
+    && window.TccRealtimeSync.isValidConfig(REALTIME_CONFIG)
+  );
+}
+
+// ── Estado salvo no localStorage ─────────────────────────────────────────────
+function getEstado() {
+  try { return JSON.parse(localStorage.getItem('tcc_estado') || '{}'); }
+  catch { return {}; }
+}
+
+function salvarEstado(estado) {
+  localStorage.setItem('tcc_estado', JSON.stringify(estado));
+}
+
+function obterNomes() {
+  return {
+    person1: document.getElementById('nome-p1').value.trim() || 'Pessoa 1',
+    person2: document.getElementById('nome-p2').value.trim() || 'Pessoa 2'
+  };
+}
+
+function salvarNomes(opcoes = {}) {
+  const n1 = document.getElementById('nome-p1').value || 'Pessoa 1';
+  const n2 = document.getElementById('nome-p2').value || 'Pessoa 2';
+  localStorage.setItem('tcc_nome_p1', n1);
+  localStorage.setItem('tcc_nome_p2', n2);
+  document.getElementById('leg-p1').textContent = n1 + ' (ML + Data)';
+  document.getElementById('leg-p2').textContent = n2 + ' (RAG + Escrita)';
+  // Atualiza headers das colunas
+  document.querySelectorAll('.nome-p1-label').forEach(el => el.textContent = n1);
+  document.querySelectorAll('.nome-p2-label').forEach(el => el.textContent = n2);
+
+  if (opcoes.sincronizar !== false && sincronizacaoPronta && realtimeBoard) {
+    clearTimeout(nomesSyncTimer);
+    nomesSyncTimer = setTimeout(() => sincronizarNomes(n1, n2), 650);
+  }
+}
+
+function atualizarAvatar() {
+  const n1 = document.getElementById('nome-p1').value || 'P1';
+  const n2 = document.getElementById('nome-p2').value || 'P2';
+  document.getElementById('av1').textContent = n1.charAt(0).toUpperCase();
+  document.getElementById('av2').textContent = n2.charAt(0).toUpperCase();
+  salvarNomes();
+}
+
+// ── Renderizar checkmark SVG ──────────────────────────────────────────────────
+function checkSVG() {
+  return `<svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+    <path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+// ── Renderizar tags ───────────────────────────────────────────────────────────
+function renderTags(tags) {
+  return tags.map(t => `<span class="tarefa-tag ${t}">${
+    t === 'entregavel' ? 'Entregável' :
+    t === 'codigo' ? 'Código' :
+    t === 'escrita' ? 'Escrita' :
+    t === 'pesquisa' ? 'Pesquisa' : t
+  }</span>`).join('');
+}
+
+// ── Renderizar uma coluna de tarefas ─────────────────────────────────────────
+function renderColuna(tarefas, tipo, estado, extraClass = '') {
+  const headerClass = tipo;
+  const labels = { p1: '<span class="nome-p1-label">Pessoa 1</span> — ML + Data', p2: '<span class="nome-p2-label">Pessoa 2</span> — RAG + Escrita', ambos: 'Ambos' };
+  const avatarTxt = { p1: 'P1', p2: 'P2', ambos: '★' };
+  const avatarClass = tipo === 'ambos' ? 'both' : tipo;
+
+  const itens = tarefas.map(t => {
+    const concluida = estado[t.id] ? 'concluida' : '';
+    const sincronizando = tarefasPendentes.has(t.id) ? 'sincronizando' : '';
+    return `
+      <div class="tarefa-item ${concluida} ${sincronizando}" data-id="${t.id}" data-tipo="${tipo}" onclick="toggleTarefa('${t.id}', '${tipo}')">
+        <div class="tarefa-check ${avatarClass}">${checkSVG()}</div>
+        <div class="tarefa-texto">${t.texto}</div>
+        ${renderTags(t.tags)}
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="coluna-pessoa ${extraClass}">
+      <div class="coluna-header ${headerClass}">
+        <div class="avatar-mini ${avatarClass}">${avatarTxt[tipo]}</div>
+        ${labels[tipo]}
+      </div>
+      ${itens}
+    </div>`;
+}
+
+// ── Renderizar todos os meses ─────────────────────────────────────────────────
+function renderMeses() {
+  const estado = getEstado();
+  const container = document.getElementById('meses-container');
+  container.innerHTML = '';
+
+  MESES.forEach((mes, idx) => {
+    const totalTarefas = mes.tarefas.p1.length + mes.tarefas.p2.length + mes.tarefas.ambos.length;
+    const concluidas = [...mes.tarefas.p1, ...mes.tarefas.p2, ...mes.tarefas.ambos]
+      .filter(t => estado[t.id]).length;
+    const pct = totalTarefas ? Math.round((concluidas / totalTarefas) * 100) : 0;
+
+    const sec = document.createElement('div');
+    sec.className = 'mes-secao';
+    sec.id = `mes-${mes.id}`;
+    sec.innerHTML = `
+      <div class="mes-header">
+        <div class="mes-badge ${mes.atual ? 'atual' : ''}">${mes.label} ${mes.ano}</div>
+        <div>
+          <div class="mes-titulo">${mes.titulo}</div>
+          <div class="mes-subtitulo">${mes.subtitulo}</div>
+        </div>
+        <div class="mes-progresso-texto">${concluidas}/${totalTarefas} tarefas (${pct}%)</div>
+      </div>
+      <div class="tarefas-grid">
+        ${renderColuna(mes.tarefas.p1, 'p1', estado)}
+        ${renderColuna(mes.tarefas.p2, 'p2', estado)}
+        ${renderColuna(mes.tarefas.ambos, 'ambos', estado, 'coluna-full')}
+      </div>
+      ${idx < MESES.length - 1 ? '<div class="divisor" style="margin-top:28px"></div>' : ''}
+    `;
+    container.appendChild(sec);
+  });
+
+  atualizarProgressoGlobal();
+  atualizarNomesNasTelas();
+}
+
+// ── Toggle tarefa ─────────────────────────────────────────────────────────────
+async function toggleTarefa(id, tipo) {
+  if (tarefasPendentes.has(id)) return;
+
+  if (realtimeConfigurado() && !sincronizacaoPronta) {
+    mostrarToast(sessaoAtual
+      ? '⏳ Aguarde a conexão com o cronograma compartilhado.'
+      : '🔐 Entre com seu e-mail para alterar o progresso compartilhado.');
+    if (!sessaoAtual) document.getElementById('sync-email').focus();
+    return;
+  }
+
+  const estado = getEstado();
+  const valorAnterior = estado[id] === true;
+  const novoValor = !valorAnterior;
+  estado[id] = novoValor;
+  salvarEstado(estado);
+
+  if (!realtimeConfigurado()) {
+    renderMeses();
+    return;
+  }
+
+  tarefasPendentes.add(id);
+  renderMeses();
+
+  try {
+    await realtimeBoard.setTask(id, novoValor);
+  } catch (error) {
+    console.error('Falha ao sincronizar tarefa:', error);
+    mostrarToast('⚠️ Não foi possível salvar. Verifique a conexão e tente novamente.', 5000);
+
+    try {
+      await realtimeBoard.reload();
+    } catch {
+      const estadoRestaurado = getEstado();
+      estadoRestaurado[id] = valorAnterior;
+      salvarEstado(estadoRestaurado);
+    }
+  } finally {
+    tarefasPendentes.delete(id);
+    renderMeses();
+  }
+}
+
+// ── Progresso global ──────────────────────────────────────────────────────────
+function atualizarProgressoGlobal() {
+  const estado = getEstado();
+  let total = 0, concluidas = 0;
+  MESES.forEach(m => {
+    [...m.tarefas.p1, ...m.tarefas.p2, ...m.tarefas.ambos].forEach(t => {
+      total++;
+      if (estado[t.id]) concluidas++;
+    });
+  });
+  const pct = total ? Math.round((concluidas / total) * 100) : 0;
+  document.getElementById('pct-geral').textContent = pct + '%';
+  document.getElementById('barra-geral').style.width = pct + '%';
+  document.getElementById('txt-concluidas').textContent = `${concluidas} de ${total} tarefas concluídas`;
+}
+
+// ── Atualizar nomes nas labels das colunas ────────────────────────────────────
+function atualizarNomesNasTelas() {
+  const n1 = localStorage.getItem('tcc_nome_p1') || 'Pessoa 1';
+  const n2 = localStorage.getItem('tcc_nome_p2') || 'Pessoa 2';
+  document.querySelectorAll('.nome-p1-label').forEach(el => el.textContent = n1);
+  document.querySelectorAll('.nome-p2-label').forEach(el => el.textContent = n2);
+}
+
+// ── Countdown ─────────────────────────────────────────────────────────────────
+function atualizarCountdown() {
+  const prazo = new Date('2026-10-31');
+  const hoje = new Date();
+  const diff = prazo - hoje;
+  if (diff <= 0) {
+    document.getElementById('dias-restantes').textContent = '0';
+    return;
+  }
+  const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const meses = Math.floor(dias / 30);
+  const semanas = Math.floor(dias / 7);
+  document.getElementById('dias-restantes').textContent = dias.toLocaleString('pt-BR');
+  document.getElementById('cd-meses').textContent = meses;
+  document.getElementById('cd-semanas').textContent = semanas;
+  document.getElementById('cd-dias').textContent = dias % 7;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function mostrarToast(msg, duracao = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visivel');
+  setTimeout(() => t.classList.remove('visivel'), duracao);
+}
+
+// ── Compartilhar progresso ────────────────────────────────────────────────────
+function compartilharProgresso() {
+  const estado = getEstado();
+  const n1 = localStorage.getItem('tcc_nome_p1') || 'Letícia';
+  const n2 = localStorage.getItem('tcc_nome_p2') || 'Lucas';
+  let url = window.location.origin + window.location.pathname;
+
+  // Enquanto o backend não está configurado, preserva o compartilhamento antigo
+  // por snapshot para que o guia continue funcional.
+  if (!realtimeConfigurado()) {
+    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ estado, n1, n2 }))));
+    url += '#p=' + payload;
+  }
+
+  // Copia para a área de transferência
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('btn-share');
+    btn.classList.add('copiado');
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Link copiado!`;
+    mostrarToast(realtimeConfigurado()
+      ? '✅ Link da equipe copiado. O progresso será o mesmo para os dois.'
+      : '✅ Link com uma cópia do progresso foi copiado.');
+    setTimeout(() => {
+      btn.classList.remove('copiado');
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Compartilhar progresso`;
+    }, 3000);
+  }).catch(() => {
+    // Fallback: abre prompt com o link para copiar manualmente
+    window.prompt('Copie o link da equipe:', url);
+  });
+}
+
+// ── Importar progresso via hash da URL ────────────────────────────────────────
+function importarProgressoDaURL() {
+  const hash = window.location.hash;
+  if (!hash.startsWith('#p=')) return false;
+
+  try {
+    const payload = JSON.parse(decodeURIComponent(escape(atob(hash.slice(3)))));
+    if (!payload.estado) return false;
+
+    // Salva o estado importado no localStorage
+    salvarEstado(payload.estado);
+    if (payload.n1) localStorage.setItem('tcc_nome_p1', payload.n1);
+    if (payload.n2) localStorage.setItem('tcc_nome_p2', payload.n2);
+
+    // Remove o hash da URL para não reimportar ao recarregar
+    history.replaceState(null, '', window.location.pathname);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ── Interface e autenticação da sincronização ────────────────────────────────
+function atualizarPainelSync(status, titulo, detalhe) {
+  const painel = document.getElementById('sync-panel');
+  painel.dataset.status = status;
+  document.getElementById('sync-title').textContent = titulo;
+  document.getElementById('sync-detail').textContent = detalhe;
+}
+
+function mostrarControlesDeAcesso(session) {
+  document.getElementById('sync-form').hidden = Boolean(session);
+  document.getElementById('sync-session').hidden = !session;
+  document.getElementById('sync-session-email').textContent = session?.user?.email || '';
+}
+
+function aplicarNomesRemotos(settings) {
+  if (!settings) return;
+
+  const n1 = settings.person1_name || 'Letícia';
+  const n2 = settings.person2_name || 'Lucas';
+  document.getElementById('nome-p1').value = n1;
+  document.getElementById('nome-p2').value = n2;
+  document.getElementById('av1').textContent = n1.charAt(0).toUpperCase();
+  document.getElementById('av2').textContent = n2.charAt(0).toUpperCase();
+  salvarNomes({ sincronizar: false });
+}
+
+function aplicarTarefaRemota(row, origem) {
+  if (!row?.task_id) return;
+
+  const estado = getEstado();
+  estado[row.task_id] = row.completed === true;
+  salvarEstado(estado);
+  renderMeses();
+
+  if (
+    origem === 'realtime'
+    && sessaoAtual
+    && row.updated_by
+    && row.updated_by !== sessaoAtual.user.id
+  ) {
+    mostrarToast('🔄 Progresso atualizado pela outra pessoa da dupla.');
+  }
+}
+
+async function sincronizarNomes(n1, n2) {
+  try {
+    await realtimeBoard.setNames(n1, n2);
+  } catch (error) {
+    console.error('Falha ao sincronizar nomes:', error);
+    mostrarToast('⚠️ Não foi possível sincronizar os nomes.', 4500);
+    try { await realtimeBoard.reload(); } catch { /* mantém o cache local */ }
+  }
+}
+
+function mensagemDeErroSync(error) {
+  if (error?.code === 'TCC_ACCESS_DENIED') {
+    return 'Este e-mail não está na lista de Lucas e Letícia. Saia e entre com o endereço autorizado.';
+  }
+
+  if (!navigator.onLine) {
+    return 'Sem internet. Reconecte e tente novamente.';
+  }
+
+  return 'Não foi possível acessar o cronograma compartilhado. Tente novamente em instantes.';
+}
+
+async function conectarSessao(session) {
+  const tentativa = ++conexaoAtual;
+  sincronizacaoPronta = false;
+  sessaoAtual = session || null;
+  mostrarControlesDeAcesso(session);
+
+  if (!session) {
+    await realtimeBoard.disconnect();
+    atualizarPainelSync(
+      'local',
+      'Entre para sincronizar ao vivo',
+      'Use um dos dois e-mails autorizados; o acesso chega por link mágico.'
+    );
+    document.getElementById('site-footer').textContent =
+      'TCC — Ciência da Computação · Entre para alterar o progresso compartilhado';
+    return;
+  }
+
+  atualizarPainelSync('connecting', 'Conectando ao progresso da dupla', session.user.email);
+
+  try {
+    const connection = await realtimeBoard.connect(session, {
+      names: obterNomes(),
+      legacyState: estadoLegadoPendente
+    });
+
+    if (tentativa !== conexaoAtual) return;
+    sincronizacaoPronta = true;
+
+    if (estadoLegadoPendente) {
+      estadoLegadoPendente = null;
+      mostrarToast('✅ Progresso do link antigo incorporado ao quadro compartilhado.', 5000);
+    }
+
+    if (connection.subscribed) {
+      atualizarPainelSync(
+        'live',
+        'Progresso sincronizado ao vivo',
+        `Conectado como ${session.user.email}. Alterações aparecem para a dupla automaticamente.`
+      );
+      document.getElementById('site-footer').textContent =
+        'TCC — Ciência da Computação · Progresso compartilhado e sincronizado ao vivo';
+    } else {
+      atualizarPainelSync(
+        'degraded',
+        'Progresso salvo; canal ao vivo reconectando',
+        `Conectado como ${session.user.email}. A página atualizará assim que o canal voltar.`
+      );
+    }
+  } catch (error) {
+    if (tentativa !== conexaoAtual) return;
+    console.error('Falha ao conectar ao cronograma:', error);
+    atualizarPainelSync('error', 'Sincronização indisponível', mensagemDeErroSync(error));
+  }
+}
+
+async function enviarLinkDeAcesso(event) {
+  event.preventDefault();
+  const email = document.getElementById('sync-email').value.trim().toLowerCase();
+  const button = document.getElementById('sync-login-button');
+  if (!email) return;
+
+  button.disabled = true;
+  button.textContent = 'Enviando...';
+
+  try {
+    const redirectTo = window.location.origin + window.location.pathname;
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: redirectTo,
+        shouldCreateUser: true
+      }
+    });
+
+    if (error) throw error;
+    atualizarPainelSync(
+      'connecting',
+      'Link de acesso enviado',
+      `Abra o e-mail enviado para ${email} e volte por aquele link.`
+    );
+    mostrarToast('📩 Link mágico enviado. Confira também a caixa de spam.', 5000);
+  } catch (error) {
+    console.error('Falha ao enviar link mágico:', error);
+    mostrarToast('⚠️ Não foi possível enviar o link agora. Aguarde um minuto e tente novamente.', 5500);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Receber link de acesso';
+  }
+}
+
+async function sairDaSincronizacao() {
+  sincronizacaoPronta = false;
+  await supabaseClient.auth.signOut();
+}
+
+async function inicializarRealtime() {
+  if (!realtimeConfigurado()) {
+    atualizarPainelSync(
+      'local',
+      'Progresso salvo neste dispositivo',
+      'O backend compartilhado está preparado no código e aguarda a configuração do projeto Supabase.'
+    );
+    return;
+  }
+
+  if (!window.supabase?.createClient) {
+    atualizarPainelSync('error', 'Sincronização indisponível', 'A biblioteca de conexão não pôde ser carregada.');
+    return;
+  }
+
+  supabaseClient = window.supabase.createClient(
+    REALTIME_CONFIG.projectUrl,
+    REALTIME_CONFIG.publishableKey,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
+
+  realtimeBoard = new window.TccRealtimeSync.RealtimeBoard({
+    client: supabaseClient,
+    boardSlug: REALTIME_CONFIG.boardSlug,
+    onSnapshot: ({ state, names }) => {
+      salvarEstado(state);
+      aplicarNomesRemotos(names);
+      renderMeses();
+    },
+    onTaskChange: aplicarTarefaRemota,
+    onNamesChange: (settings, origem) => {
+      aplicarNomesRemotos(settings);
+      if (
+        origem === 'realtime'
+        && sessaoAtual
+        && settings.updated_by
+        && settings.updated_by !== sessaoAtual.user.id
+      ) {
+        mostrarToast('🔄 Nomes da dupla atualizados no outro dispositivo.');
+      }
+    },
+    onStatus: ({ kind }) => {
+      if (kind === 'connecting') {
+        atualizarPainelSync('connecting', 'Conectando ao progresso da dupla', sessaoAtual?.user?.email || '');
+      } else if (kind === 'live' && sessaoAtual) {
+        atualizarPainelSync(
+          'live',
+          'Progresso sincronizado ao vivo',
+          `Conectado como ${sessaoAtual.user.email}. Alterações aparecem para a dupla automaticamente.`
+        );
+      } else if (kind === 'degraded') {
+        atualizarPainelSync(
+          'degraded',
+          'Reconectando a atualização ao vivo',
+          'O último estado continua visível; aguarde a conexão voltar antes de fechar a página.'
+        );
+      }
+    }
+  });
+
+  document.getElementById('sync-form').addEventListener('submit', enviarLinkDeAcesso);
+  document.getElementById('sync-logout-button').addEventListener('click', sairDaSincronizacao);
+
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) throw error;
+  await conectarSessao(data.session);
+
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'INITIAL_SESSION') return;
+    if (event === 'TOKEN_REFRESHED' && session?.user?.id === sessaoAtual?.user?.id) return;
+    if (event === 'SIGNED_IN' && session?.user?.id === sessaoAtual?.user?.id && sincronizacaoPronta) return;
+    window.setTimeout(() => conectarSessao(session), 0);
+  });
+
+  window.addEventListener('online', () => {
+    if (sincronizacaoPronta) realtimeBoard.reload().catch(console.error);
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && sincronizacaoPronta) realtimeBoard.reload().catch(console.error);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+(function init() {
+  // Verifica se há progresso compartilhado na URL (link do WhatsApp)
+  const importou = importarProgressoDaURL();
+  estadoLegadoPendente = importou ? { ...getEstado() } : null;
+
+  // Restaura nomes salvos
+  const n1 = localStorage.getItem('tcc_nome_p1') || 'Letícia';
+  const n2 = localStorage.getItem('tcc_nome_p2') || 'Lucas';
+  document.getElementById('nome-p1').value = n1;
+  document.getElementById('nome-p2').value = n2;
+  document.getElementById('av1').textContent = n1.charAt(0).toUpperCase();
+  document.getElementById('av2').textContent = n2.charAt(0).toUpperCase();
+  document.getElementById('leg-p1').textContent = n1 + ' (ML + Data)';
+  document.getElementById('leg-p2').textContent = n2 + ' (RAG + Escrita)';
+
+  atualizarCountdown();
+  renderMeses();
+  inicializarRealtime().catch((error) => {
+    console.error('Erro ao iniciar sincronização:', error);
+    atualizarPainelSync('error', 'Sincronização indisponível', mensagemDeErroSync(error));
+  });
+
+  // Mostra banner se acabou de importar progresso
+  if (importou) {
+    const banner = document.createElement('div');
+    banner.className = 'banner-importado';
+    banner.textContent = realtimeConfigurado()
+      ? '✅ Progresso do link antigo reconhecido. Entre para incorporá-lo ao quadro compartilhado.'
+      : '✅ Progresso do link importado para este dispositivo.';
+    document.querySelector('.container').insertBefore(banner, document.querySelector('.countdown'));
+    setTimeout(() => banner.remove(), 6000);
+  }
+})();
+</script>
+</body>
+</html>
