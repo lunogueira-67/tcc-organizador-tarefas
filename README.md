@@ -24,7 +24,7 @@ python -m http.server 8000
 
 Depois acesse `http://127.0.0.1:8000/`.
 
-Enquanto `realtime-config.js` estiver com `enabled: false`, o organizador funciona somente neste dispositivo e pode compartilhar uma cópia do estado pelo link antigo.
+A versão publicada usa um banco Supabase dedicado. Sem uma sessão autorizada, o quadro fica visível, mas as alterações compartilhadas permanecem bloqueadas.
 
 ## Testes
 
@@ -32,6 +32,6 @@ Enquanto `realtime-config.js` estiver com `enabled: false`, o organizador funcio
 node --test tests/realtime-sync.test.cjs
 ```
 
-## Ativar a sincronização
+## Sincronização
 
 Consulte [SINCRONIZACAO_TEMPO_REAL.md](./SINCRONIZACAO_TEMPO_REAL.md). Nunca coloque chaves `secret` ou `service_role` no frontend.

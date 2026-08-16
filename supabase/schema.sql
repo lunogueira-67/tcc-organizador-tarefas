@@ -90,7 +90,7 @@ create policy "members_select_own_membership"
 on public.tcc_board_members
 for select
 to authenticated
-using (email = lower((select auth.jwt() ->> 'email')));
+using (email = lower((select auth.jwt()) ->> 'email'));
 
 drop policy if exists "members_select_board" on public.tcc_boards;
 create policy "members_select_board"
@@ -102,7 +102,7 @@ using (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_boards.id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 );
 
@@ -116,7 +116,7 @@ using (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_task_progress.board_id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 );
 
@@ -131,7 +131,7 @@ with check (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_task_progress.board_id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 );
 
@@ -145,7 +145,7 @@ using (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_task_progress.board_id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 )
 with check (
@@ -154,7 +154,7 @@ with check (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_task_progress.board_id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 );
 
@@ -168,7 +168,7 @@ using (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_board_settings.board_id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 );
 
@@ -183,7 +183,7 @@ with check (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_board_settings.board_id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 );
 
@@ -197,7 +197,7 @@ using (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_board_settings.board_id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 )
 with check (
@@ -206,7 +206,7 @@ with check (
     select 1
     from public.tcc_board_members member
     where member.board_id = tcc_board_settings.board_id
-      and member.email = lower((select auth.jwt() ->> 'email'))
+      and member.email = lower((select auth.jwt()) ->> 'email')
   )
 );
 

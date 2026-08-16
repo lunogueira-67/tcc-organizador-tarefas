@@ -4,7 +4,7 @@ O organizador de tarefas é um projeto independente hospedado no GitHub Pages. O
 
 ## Como funciona
 
-1. Lucas ou Letícia abre o link público do guia.
+1. Lucas ou Letícia abre o organizador publicado.
 2. A pessoa informa um e-mail autorizado e recebe um link mágico de acesso.
 3. Cada clique grava apenas a tarefa alterada em `tcc_task_progress`.
 4. O Supabase Realtime envia a alteração ao outro navegador.
@@ -28,27 +28,25 @@ O navegador mantém uma cópia local somente para carregamento rápido. Depois d
 - `supabase/schema.sql`: tabelas, políticas RLS, gatilhos e publicação Realtime.
 - `tests/realtime-sync.test.cjs`: testes da configuração, estado remoto e migração de links antigos.
 
-## Ativação
+## Configuração aplicada
 
-1. Criar um projeto Supabase dedicado ao TCC na região `sa-east-1`.
-2. Aplicar `supabase/schema.sql` como migração.
-3. Adicionar os dois e-mails em `tcc_board_members`, sempre em minúsculas.
-4. Em Auth > URL Configuration, configurar:
-   - Site URL: `https://USUARIO.github.io/tcc-organizador-tarefas/`
-   - Redirect URL: `https://USUARIO.github.io/tcc-organizador-tarefas/`
-5. Copiar a Project URL e uma chave pública `sb_publishable_...` para `realtime-config.js` e alterar `enabled` para `true`.
-6. Publicar a alteração no GitHub Pages.
+1. Projeto Supabase dedicado criado na região `sa-east-1`.
+2. `supabase/schema.sql` aplicado como migração.
+3. Lucas e Letícia cadastrados em `tcc_board_members` com e-mails minúsculos.
+4. A configuração pública do projeto foi adicionada a `realtime-config.js` e a sincronização foi habilitada.
+5. O endereço de produção é `https://lunogueira-67.github.io/tcc-organizador-tarefas/`.
+6. Em Auth > URL Configuration, o mesmo endereço deve ser usado como Site URL e Redirect URL.
 
 Exemplo administrativo para cadastrar os membros depois da criação do quadro:
 
 ```sql
 insert into public.tcc_board_members (board_id, email, display_name, role)
-select id, lower('EMAIL_DA_LETICIA'), 'Letícia', 'owner'
+select id, lower('EMAIL_DA_LETICIA'), 'Letícia', 'member'
 from public.tcc_boards
 where slug = 'tcc-organizador-tarefas';
 
 insert into public.tcc_board_members (board_id, email, display_name, role)
-select id, lower('EMAIL_DO_LUCAS'), 'Lucas', 'member'
+select id, lower('EMAIL_DO_LUCAS'), 'Lucas', 'owner'
 from public.tcc_boards
 where slug = 'tcc-organizador-tarefas';
 ```

@@ -1407,7 +1407,7 @@ async function conectarSessao(session) {
 
     if (estadoLegadoPendente) {
       estadoLegadoPendente = null;
-      mostrarToast('✅ Progresso do link antigo incorporado ao quadro compartilhado.', 5000);
+      mostrarToast('✅ Progresso deste dispositivo incorporado ao quadro compartilhado.', 5000);
     }
 
     if (connection.subscribed) {
@@ -1565,7 +1565,9 @@ async function inicializarRealtime() {
 (function init() {
   // Verifica se há progresso compartilhado na URL (link do WhatsApp)
   const importou = importarProgressoDaURL();
-  estadoLegadoPendente = importou ? { ...getEstado() } : null;
+  const estadoEmCache = getEstado();
+  const possuiTarefasLocais = Object.values(estadoEmCache).some(valor => valor === true);
+  estadoLegadoPendente = (importou || possuiTarefasLocais) ? { ...estadoEmCache } : null;
 
   // Restaura nomes salvos
   const n1 = localStorage.getItem('tcc_nome_p1') || 'Letícia';
