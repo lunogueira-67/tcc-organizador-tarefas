@@ -57,6 +57,12 @@ Links que contêm `#p=...` ainda são reconhecidos. Depois que uma pessoa autori
 
 ## Comportamento em falhas
 
+- Se o projeto Supabase estiver pausado/inativo, reative-o pelo painel antes de testar o acesso. O GitHub Pages pode continuar funcionando mesmo com o backend indisponível.
+- A autorização em `tcc_board_members` controla o quadro, não a entrega de e-mails. O remetente padrão do Supabase só entrega para membros da equipe administrativa da organização e possui limite reduzido. Para enviar a Lucas e Letícia sem dar acesso administrativo ao projeto, configure SMTP próprio em Authentication > Email > SMTP Settings. Consulte a [documentação oficial](https://supabase.com/docs/guides/auth/auth-smtp).
+- Não adicione Letícia à equipe administrativa somente para contornar a restrição de entrega. Preserve a separação entre acesso ao quadro e administração do serviço.
+- O painel mantém visível o diagnóstico de falha de envio: destinatário bloqueado, limite de pedidos, serviço indisponível ou link expirado. Um pedido aceito não comprova recebimento na caixa de entrada.
+- Ao validar a configuração, use o e-mail já cadastrado no quadro e o link mais recente. Nunca compartilhe links de autenticação ou tokens no GitHub.
+
 - Sem login, cliques são bloqueados no modo compartilhado.
 - Se uma gravação falhar, a página recarrega o estado oficial do banco.
 - Se somente o WebSocket cair, as gravações continuam no banco e o indicador mostra que o canal está reconectando.

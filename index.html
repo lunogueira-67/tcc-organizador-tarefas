@@ -842,9 +842,9 @@
   TCC — Ciência da Computação &nbsp;·&nbsp; Clique nas tarefas para marcar como concluída &nbsp;·&nbsp; Progresso salvo automaticamente neste dispositivo
 </footer>
 
-<script src="./realtime-config.js?v=2"></script>
+<script src="./realtime-config.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0"></script>
-<script src="./realtime-sync.js?v=2"></script>
+<script src="./realtime-sync.js?v=3"></script>
 <script>
 // ── Dados das tarefas por mês ────────────────────────────────────────────────
 const MESES = [
@@ -1387,7 +1387,7 @@ async function conectarSessao(session) {
     atualizarPainelSync(
       'local',
       'Entre para sincronizar ao vivo',
-      'Use um dos dois e-mails autorizados; o acesso chega por link mágico.'
+      'Informe seu e-mail autorizado e solicite o link. Abra o e-mail mais recente para entrar e carregar o progresso da dupla.'
     );
     document.getElementById('site-footer').textContent =
       'TCC — Ciência da Computação · Entre para alterar o progresso compartilhado';
@@ -1453,14 +1453,17 @@ async function enviarLinkDeAcesso(event) {
 
     if (error) throw error;
     atualizarPainelSync(
-      'connecting',
-      'Link de acesso enviado',
-      `Abra o e-mail enviado para ${email} e volte por aquele link.`
+      'local',
+      'Pedido de acesso aceito',
+      `Confira a caixa de entrada e o spam de ${email}. Abra somente o link mais recente. A sincronização começa depois do login.`
     );
     mostrarToast('📩 Link mágico enviado. Confira também a caixa de spam.', 5000);
   } catch (error) {
-    console.error('Falha ao enviar link mágico:', error);
-    mostrarToast('⚠️ Não foi possível enviar o link agora. Aguarde um minuto e tente novamente.', 5500);
+    const detalhe = navigator.onLine
+      ? window.TccRealtimeSync.accessLinkErrorMessage(error)
+      : 'Sem internet. Reconecte e solicite o link novamente.';
+    atualizarPainelSync('error', 'O link de acesso não foi enviado', detalhe);
+    mostrarToast('⚠️ O envio falhou. Veja a orientação no painel de acesso.', 5500);
   } finally {
     button.disabled = false;
     button.textContent = 'Receber link de acesso';

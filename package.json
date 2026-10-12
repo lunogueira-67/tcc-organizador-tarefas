@@ -4,6 +4,6 @@
   "private": true,
   "description": "Organizador compartilhado do cronograma do TCC Fraude Pix",
   "scripts": {
-    "test": "node --test tests/realtime-sync.test.cjs"
+    "test": "node --test tests/*.test.cjs"
   }
 }

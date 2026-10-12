@@ -13,6 +13,30 @@
 
   const TASK_ID_PATTERN = /^[a-z0-9_]{3,64}$/;
 
+  function accessLinkErrorMessage(error) {
+    const code = String(error?.code || '');
+    const message = String(error?.message || '').toLowerCase();
+    if (code === 'email_address_not_authorized' || message.includes('email address not authorized')) {
+      return 'O serviço de e-mail bloqueou este destinatário. O responsável pelo organizador precisa configurar um remetente SMTP próprio no Supabase. Repetir o pedido não libera o envio.';
+    }
+    if (error?.status === 429 || code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit') {
+      return 'O limite de envio de links foi atingido. Aguarde antes de tentar novamente; novos cliques não antecipam a liberação.';
+    }
+    if (code === 'otp_expired') {
+      return 'O link de acesso expirou ou já foi utilizado. Solicite outro link e abra somente o e-mail mais recente.';
+    }
+    if (code === 'email_provider_disabled' || code === 'signup_disabled' || code === 'otp_disabled') {
+      return 'O acesso por e-mail está desativado no serviço. O responsável precisa revisar a configuração de autenticação do organizador.';
+    }
+    if (code === 'email_address_invalid' || code === 'validation_failed') {
+      return 'Confira o endereço de e-mail informado e tente novamente.';
+    }
+    if (Number(error?.status) >= 500 || code === 'request_timeout' || code === 'unexpected_failure' || code === 'email_send_failed') {
+      return 'O serviço de acesso está indisponível ou falhou ao enviar o e-mail. O responsável precisa verificar se o projeto Supabase está ativo e se o remetente de e-mails funciona.';
+    }
+    return 'Não foi possível solicitar o link. Confira sua conexão e tente novamente; se persistir, informe o erro ao responsável pelo organizador.';
+  }
+
   function isValidConfig(config) {
     if (!config || config.enabled !== true) return false;
 
@@ -266,6 +290,7 @@
 
   return {
     RealtimeBoard,
+    accessLinkErrorMessage,
     completedRowsFromLegacy,
     isValidConfig,
     stateFromRows
