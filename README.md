@@ -29,7 +29,7 @@ A versão publicada usa um banco Supabase dedicado. Sem uma sessão autorizada, 
 ## Testes
 
 ```powershell
-node --test tests/realtime-sync.test.cjs
+node --test tests/*.test.cjs
 ```
 
 ## Sincronização
